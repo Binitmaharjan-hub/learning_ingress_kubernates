@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Student Portal</title>
+ <style>
+ body {
+ font-family: Arial;
+ margin: 40px;
+ }
+ table {
+ border-collapse: collapse;
+ }
+ table, th, td {
+ border: 1px solid black;
+ padding: 10px;
+ }
+ input {
+ margin: 5px;
+ }
+ </style>
+</head>
+<body>
+ <h1>Student Portal</h1>
+ <h2>Add Student</h2>
+ <input id="name" placeholder="Name">
+ <input id="course" placeholder="Course">
+ <button onclick="addStudent()">
+ Add Student
+ </button>
+
+ <hr>
+ <h2>Students</h2>
+ <button onclick="loadStudents()">
+ Refresh
+ </button>
+ <div id="students"></div>
+ <script>
+ async function loadStudents() {
+ const response =
+ await fetch('/api/students');
+ const data = await response.json();
+ let html = "<table>";
+ html +=
+ "<tr><th>ID</th><th>Name</th><th>Course</th></tr>";
+ data.forEach(s => {
+ html += `
+ <tr>
+ <td>${s.id}</td>
+<td>${s.name}</td>
+<td>${s.course}</td>
+ </tr>
+ `;
+ });
+
+ html += "</table>";
+ document.getElementById(
+ "students"
+ ).innerHTML = html;
+ }
+ async function addStudent() {
+ const name =
+ document.getElementById("name").value;
+ const course =
+ document.getElementById("course").value;
+ await fetch('/api/students', {
+ method: "POST",
+ headers: {
+ "Content-Type": "application/json"
+ },
+ body: JSON.stringify({
+ name: name,
+ course: course
+ })
+ });
+ loadStudents();
+ }
+ loadStudents();
+ </script>
+</body>
+</html>
